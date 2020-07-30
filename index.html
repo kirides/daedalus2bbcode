@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daedalus zu BBCode</title>
+
+    <link rel="stylesheet" type="text/css" href="prismjs/themes/wog.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+</head>
+
+<body>
+    <div class="main-content container">
+        <button id="convert" class="btn">Convert</button>
+        <textarea id="json" class="no-resize is-content text-bg-dark" placeholder="Daedalus hier einfügen"></textarea>
+        <div class="is-item scroll-x is-hidden">
+            <button style="height: 2rem" class="btn" onclick="copyPlain(this)">Text</button>
+            <button style="height: 2rem" class="btn" onclick="copyBBcode(this)">BBCode</button>
+        </div>
+        <pre class="is-content-colored is-hidden"><code id="result" class="lang-daedalus"></code></pre>
+    </div>
+    <script src="prismjs/prism.js"></script>
+    <script>
+        let json = document.getElementById("json");
+        let result = document.getElementById("result");
+        let resultColored = document.getElementsByClassName("is-content-colored")[0];
+        var convertedView = document.getElementsByClassName("is-item")[0]
+        let btn = document.getElementById("convert");
+        let converted = false;
+
+        function refresh() {
+            let jsonValue = json.value;
+            convertJson(jsonValue.trim()+"\n\n");
+        }
+
+        function convertJson(jsonValue) {
+            var code = jsonValue;
+            result.innerHTML = Prism.highlight(code, Prism.languages.daedalus, 'daedalus');
+        }
+
+        changeVisibility(converted);
+
+        btn.addEventListener("click", function () {
+            try {
+                if (!converted) {
+                    refresh();
+                }
+                converted = !converted;
+                changeVisibility(converted);
+            } catch (error) {
+                alert(error);
+            }
+        });
+
+        function changeVisibility(converted) {
+            btn.innerText = converted ? "< Back" : "Colorize >"
+            if (converted) {
+                json.classList.add("is-hidden");
+                convertedView.classList.remove("is-hidden");
+                resultColored.classList.remove("is-hidden");
+
+            } else {
+                json.classList.remove("is-hidden");
+                convertedView.classList.add("is-hidden");
+                resultColored.classList.add("is-hidden");
+            }
+        }
+
+        function copyPlain(e) {
+            var detailsPre = document.getElementById('result');
+            copyTextToClipboard(detailsPre.innerText);
+        }
+        function copyBBcode(e) {
+            var detailsPre = document.getElementById('result').childNodes;
+            var spanArr = Array.from(detailsPre);
+
+            let resultBbCode = "[CODE]";
+
+            for (let x of spanArr) {
+                if (x instanceof HTMLElement) {
+                    while (x.children.length > 0) {
+                        x = x.children[0];
+                    }
+                    let rxColor = /(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/;
+                    let style = getComputedStyle(x);
+                    let color = style.color;
+                    if (color) {
+                        let match = rxColor.exec(color);
+                        resultBbCode += `[COLOR=#${toHex(+match[1])}${toHex(+match[2])}${toHex(+match[3])}]`
+                    }
+                    resultBbCode += `${x.innerText}`
+                    if (color) {
+                        resultBbCode += "[/COLOR]"
+                    }
+                } else {
+                    if (x.nodeName === "#text") {
+                        resultBbCode += x.textContent;
+                    } else {
+                        resultBbCode += x;
+                    }
+                }
+            }
+            resultBbCode += "[/CODE]";
+            copyTextToClipboard(resultBbCode);
+
+            // console.log(resultBbCode)
+        }
+        function toHex(n) {
+            var hex = n.toString(16);
+            while (hex.length < 2) { hex = "0" + hex; }
+            return hex;
+        }
+
+        function fallbackCopyTextToClipboard(text) {
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+
+            // Avoid scrolling to bottom
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            try {
+                var successful = document.execCommand('copy');
+                var msg = successful ? 'successful' : 'unsuccessful';
+                console.log('Fallback: Copying text command was ' + msg);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+
+            document.body.removeChild(textArea);
+        }
+        function copyTextToClipboard(text) {
+            if (!navigator.clipboard) {
+                fallbackCopyTextToClipboard(text);
+                return;
+            }
+            navigator.clipboard.writeText(text).then(function () {
+                console.log('Async: Copying to clipboard was successful!');
+            }, function (err) {
+                console.error('Async: Could not copy text: ', err);
+            });
+        }
+
+    </script>
+</body>
+
+</html>

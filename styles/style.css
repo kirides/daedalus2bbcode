@@ -1,0 +1,90 @@
+.container,html,body {
+	padding: 0;
+	height: 100%;
+	margin: 0;
+	background: #666;
+}
+.text-bg-dark {
+	background: #1e1e1e;
+	color: #ccc;
+	border-color: transparent;
+	padding: .5rem;
+	tab-size: 4;
+	-o-tab-size: 4;
+	-moz-tab-size: 4;
+
+	font-size: 13px;
+	text-shadow: none;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+}
+.scroll-y {
+	overflow-y: auto;
+}
+
+.scroll-x {
+	overflow-x: auto;
+}
+
+.no-resize {
+	resize: none;
+}
+
+.btn {
+	background: #333;
+	color: #ccc;
+
+	height: 2.5em;
+	user-select: none;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	cursor: pointer;
+	-webkit-appearance: initial;
+	border-radius: 3px;
+	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+	outline: none;
+	font-size: 14px;
+	font-family: Trebuchet, Arial, sans-serif;
+	font-weight: bold;
+	cursor: pointer;
+	border: 1px solid #BBB;
+	text-align: center;
+}
+
+.btn:focus {
+	border: 1px dashed #000;
+}
+
+.btn:hover {
+	background: #555;
+}
+
+.main-content {
+	display: grid;
+	grid-template: auto auto 1fr / 1fr;
+	grid-template-areas:
+		"head"
+		"items"
+		"content";
+	row-gap: .2rem;
+}
+.is-item {
+	display: flex;
+	justify-content: end;
+	padding-left: .2rem;
+	padding-right: .2rem;
+	grid-area: items;
+}
+.is-content {
+	grid-area: content;
+}
+.is-content-colored {
+	grid-area: content;
+}
+.is-hidden {
+	display: none;
+}
+
+pre[class*="language-"] {
+	padding: .5rem;
+}
