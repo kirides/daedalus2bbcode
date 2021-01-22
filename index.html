@@ -31,7 +31,7 @@
 
         function refresh() {
             let jsonValue = json.value;
-            convertJson(jsonValue.trim()+"\n\n");
+            convertJson(jsonValue.trim() + "\n\n");
         }
 
         function convertJson(jsonValue) {
@@ -71,17 +71,12 @@
             var detailsPre = document.getElementById('result');
             copyTextToClipboard(detailsPre.innerText);
         }
-        function copyBBcode(e) {
-            var detailsPre = document.getElementById('result').childNodes;
-            var spanArr = Array.from(detailsPre);
 
-            let resultBbCode = "[CODE]";
+        function getChildContentBB(x) {
+            let resultBbCode = "";
 
-            for (let x of spanArr) {
-                if (x instanceof HTMLElement) {
-                    while (x.children.length > 0) {
-                        x = x.children[0];
-                    }
+            if (x instanceof HTMLElement) {
+                if (!x.classList.contains("constvar-def")) {
                     let rxColor = /(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/;
                     let style = getComputedStyle(x);
                     let color = style.color;
@@ -93,18 +88,40 @@
                     if (color) {
                         resultBbCode += "[/COLOR]"
                     }
-                } else {
-                    if (x.nodeName === "#text") {
-                        resultBbCode += x.textContent;
-                    } else {
-                        resultBbCode += x;
+                }
+
+                if (x.childNodes && x.childNodes.length > 1) {
+                    for (let c of Array.from(x.childNodes)) {
+                        resultBbCode += getChildContentBB(c);
                     }
                 }
+            } else if (x.nodeName === "#text") {
+                resultBbCode += x.textContent;
+            }
+            return resultBbCode;
+        }
+
+        function copyBBcode(e) {
+            var detailsPre = document.getElementById('result').childNodes;
+            var spanArr = Array.from(detailsPre);
+
+            let resultBbCode = "[CODE]";
+
+            for (let x of spanArr) {
+                resultBbCode += getChildContentBB(x);
             }
             resultBbCode += "[/CODE]";
-            copyTextToClipboard(resultBbCode);
 
-            // console.log(resultBbCode)
+            // Replace 4-spaces with tabs
+            resultBbCode = resultBbCode.replace(/^(\s*)[ ]{4}(\s*)/gm, "$1\t$2")
+            // Replace tabs followed by single spaces with just the tabs
+            resultBbCode = resultBbCode.replace(/^(\t*)[ ]+/gm, "$1")
+            // replace all tabs with 4-spaces
+            while(resultBbCode.match(/^(?:[ ]{4})*\t/gm)) {
+                resultBbCode = resultBbCode.replace(/^([ ]{4})*\t/gm, "$1    ")
+            }
+
+            copyTextToClipboard(resultBbCode);
         }
         function toHex(n) {
             var hex = n.toString(16);

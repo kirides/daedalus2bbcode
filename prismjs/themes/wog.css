@@ -106,8 +106,13 @@ pre[class*="language-"] > code[class*="language-"] {
 .token.keyword {
 	color: #569cd6;
 }
-
+.token.func-def {
+	color: #569cd6;
+}
 .token.function {
+	color: #dcdcaa;
+}
+.token.function-name {
 	color: #dcdcaa;
 }
 
