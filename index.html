@@ -34,8 +34,31 @@
             convertJson(jsonValue.trim() + "\n\n");
         }
 
+        function transformToSpaces(line) {
+            let m = line.match(/^\s*(?:\S)/m)
+            if (m && m[0].length > 1) {
+                let prefix = line.substr(0, m[0].length-1)
+                let content = line.substr(m[0].length-1)
+
+                prefix = prefix
+                    .replace(/[ ]{4}/g, '\t')
+                    .replace(/[ ]/g, '')
+                    .replace(/\t/g, '    ')
+
+                    return prefix + content;
+            }
+
+            return line;
+        }
+
         function convertJson(jsonValue) {
-            var code = jsonValue;
+            let code = jsonValue.replace("\r\n", "\n");
+
+            let lines = code.split("\n")
+            for (let i = 0; i < lines.length; i++) {
+                lines[i] = transformToSpaces(lines[i])
+            }
+            code = lines.join("\r\n")
             result.innerHTML = Prism.highlight(code, Prism.languages.daedalus, 'daedalus');
         }
 
@@ -111,15 +134,6 @@
                 resultBbCode += getChildContentBB(x);
             }
             resultBbCode += "[/CODE]";
-
-            // Replace 4-spaces with tabs
-            resultBbCode = resultBbCode.replace(/^(\s*)[ ]{4}(\s*)/gm, "$1\t$2")
-            // Replace tabs followed by single spaces with just the tabs
-            resultBbCode = resultBbCode.replace(/^(\t*)[ ]+/gm, "$1")
-            // replace all tabs with 4-spaces
-            while(resultBbCode.match(/^(?:[ ]{4})*\t/gm)) {
-                resultBbCode = resultBbCode.replace(/^([ ]{4})*\t/gm, "$1    ")
-            }
 
             copyTextToClipboard(resultBbCode);
         }
