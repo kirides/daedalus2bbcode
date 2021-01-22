@@ -36,19 +36,22 @@
 
         function transformToSpaces(line) {
             let m = line.match(/^\s*(?:\S)/m)
-            if (m && m[0].length > 1) {
-                let prefix = line.substr(0, m[0].length-1)
-                let content = line.substr(m[0].length-1)
-
-                prefix = prefix
-                    .replace(/[ ]{4}/g, '\t')
-                    .replace(/[ ]/g, '')
-                    .replace(/\t/g, '    ')
-
-                    return prefix + content;
+            if (m) {
+                if (m[0].length > 1) {
+                    let prefix = line.substr(0, m[0].length-1)
+                    let content = line.substr(m[0].length-1)
+    
+                    prefix = prefix
+                        .replace(/[ ]{4}/g, '\t')
+                        .replace(/[ ]/g, '')
+                        .replace(/\t/g, '    ')
+    
+                        return prefix + content;
+                }
+                return line;
             }
 
-            return line;
+            return "";
         }
 
         function convertJson(jsonValue) {
