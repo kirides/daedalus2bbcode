@@ -58,9 +58,6 @@ pre[class*="language-"] > code[class*="language-"] {
 /*********************************************************
 * Tokens
 */
-.namespace {
-	opacity: .7;
-}
 
 .token.comment,
 .token.prolog,
@@ -180,8 +177,13 @@ pre[class*="language-"] > code[class*="language-"] {
 	cursor: unset;
 }
 
+.token.zpe-meta,
 .token.namespace {
-	color: #4ec9b0;
+	color: #569cd6;
+	/* color: #4ec9b0; */
+}
+.token.namespace-name {
+	color: #c586c0;
 }
 /*********************************************************
 * Language Specific
